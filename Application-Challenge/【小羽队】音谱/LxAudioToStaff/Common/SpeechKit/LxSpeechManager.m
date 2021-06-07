@@ -72,31 +72,31 @@
         if (block) {
             block(granted);
         }
-//        if (granted) {
-//            AVAudioSession *session = [AVAudioSession sharedInstance];
-//            NSError *error;
-//            if (![session setCategory:AVAudioSessionCategoryPlayAndRecord error:&error]) {
-//                [MBProgressHUD lx_showHudWithTitle:error.description hideCompletion:nil];
-//            }
-//            if (![session setActive:YES error:&error]) {
-//                [MBProgressHUD lx_showHudWithTitle:error.description hideCompletion:nil];
-//            }
-//        }
+        if (granted) {
+            AVAudioSession *session = [AVAudioSession sharedInstance];
+            NSError *error;
+            if (![session setCategory:AVAudioSessionCategoryPlayAndRecord error:&error]) {
+                [MBProgressHUD lx_showHudWithTitle:error.description hideCompletion:nil];
+            }
+            if (![session setActive:YES error:&error]) {
+                [MBProgressHUD lx_showHudWithTitle:error.description hideCompletion:nil];
+            }
+        }
         
     }];
 }
 
 /** Lx description   开始录制  **/
 - (void)lx_startRecord{
-    [self startEngine];
+//    [self startEngine];
     [self initEngine];
     
-//    AVAudioFormat *recordingFormat = [[self.audioEngine inputNode] outputFormatForBus:0];
-//    [[self.audioEngine inputNode] installTapOnBus:0 bufferSize:1024 format:recordingFormat block:^(AVAudioPCMBuffer * _Nonnull buffer, AVAudioTime * _Nonnull when) {
-//        [self.recognitionRequest appendAudioPCMBuffer:buffer];
-//    }];
-//    [self.audioEngine prepare];
-//    [self.audioEngine startAndReturnError:nil];
+    AVAudioFormat *recordingFormat = [[self.audioEngine inputNode] outputFormatForBus:0];
+    [[self.audioEngine inputNode] installTapOnBus:0 bufferSize:1024 format:recordingFormat block:^(AVAudioPCMBuffer * _Nonnull buffer, AVAudioTime * _Nonnull when) {
+        [self.recognitionRequest appendAudioPCMBuffer:buffer];
+    }];
+    [self.audioEngine prepare];
+    [self.audioEngine startAndReturnError:nil];
     
 }
 
@@ -104,36 +104,34 @@
 - (void)lx_stopRecordWithTransBlock:(TransStringBlock)block{
     self.transBLock = [block copy];
     [self releaseEngine];
-    [self stopEngine];
-    
-    
-//    [self test];
+//    [self stopEngine];
+    [self test];
 }
 
 #pragma mark - ************************Function************************
 - (void)startEngine{
-    AgoraRtcEngineConfig *config = [[AgoraRtcEngineConfig alloc] init];
-    config.appId = kSDK_appId;
-    config.areaCode = 4294967295;
-    
-    AgoraLogConfig *logConfig = [[AgoraLogConfig alloc] init];
-    logConfig.level = AgoraLogLevelInfo;
-    config.logConfig = logConfig;
-    
-    AgoraRtcEngineKit *agoraKit = [AgoraRtcEngineKit sharedEngineWithConfig:config delegate:self];
-    [agoraKit disableVideo];
-    
-    [agoraKit setChannelProfile:AgoraChannelProfileLiveBroadcasting];
-    [agoraKit setClientRole:AgoraClientRoleBroadcaster];
-    [agoraKit setAudioFrameDelegate:self];
-    [agoraKit setRecordingAudioFrameParametersWithSampleRate:44100 channel:1 mode:AgoraAudioRawFrameOperationModeReadWrite samplesPerCall:4410];
-    [agoraKit setMixedAudioFrameParametersWithSampleRate:44100 samplesPerCall:4410];
-    [agoraKit setPlaybackAudioFrameParametersWithSampleRate:44100 channel:1 mode:AgoraAudioRawFrameOperationModeReadWrite samplesPerCall:4410];
-    [agoraKit setDefaultAudioRouteToSpeakerphone:YES];
-    self.agoraKit = agoraKit;
-    
-   NSInteger code = [agoraKit joinChannelByToken:kSDK_token channelId:@"1" info:nil uid:0 options:[[AgoraRtcChannelMediaOptions alloc]init]];
-    debugLog(@"加入房间成功%ld",(long)code);
+//    AgoraRtcEngineConfig *config = [[AgoraRtcEngineConfig alloc] init];
+//    config.appId = kSDK_appId;
+//    config.areaCode = 4294967295;
+//
+//    AgoraLogConfig *logConfig = [[AgoraLogConfig alloc] init];
+//    logConfig.level = AgoraLogLevelInfo;
+//    config.logConfig = logConfig;
+//
+//    AgoraRtcEngineKit *agoraKit = [AgoraRtcEngineKit sharedEngineWithConfig:config delegate:self];
+//    [agoraKit disableVideo];
+//
+//    [agoraKit setChannelProfile:AgoraChannelProfileLiveBroadcasting];
+//    [agoraKit setClientRole:AgoraClientRoleBroadcaster];
+//    [agoraKit setAudioFrameDelegate:self];
+//    [agoraKit setRecordingAudioFrameParametersWithSampleRate:44100 channel:1 mode:AgoraAudioRawFrameOperationModeReadWrite samplesPerCall:4410];
+//    [agoraKit setMixedAudioFrameParametersWithSampleRate:44100 samplesPerCall:4410];
+//    [agoraKit setPlaybackAudioFrameParametersWithSampleRate:44100 channel:1 mode:AgoraAudioRawFrameOperationModeReadWrite samplesPerCall:4410];
+//    [agoraKit setDefaultAudioRouteToSpeakerphone:YES];
+//    self.agoraKit = agoraKit;
+//
+//   NSInteger code = [agoraKit joinChannelByToken:kSDK_token channelId:@"1" info:nil uid:0 options:[[AgoraRtcChannelMediaOptions alloc]init]];
+//    debugLog(@"加入房间成功%ld",(long)code);
 }
 
 - (void)stopEngine{
@@ -141,16 +139,16 @@
 //    [self.agoraKit stopAudioRecording];
 //    [self.agoraKit stopChannelMediaRelay];
 //    [self.agoraKit stopAllEffects];
-    [self.agoraKit leaveChannel:^(AgoraChannelStats * _Nonnull stat) {
+//    [self.agoraKit leaveChannel:^(AgoraChannelStats * _Nonnull stat) {
 //        [self performSelector:@selector(test) withObject:nil afterDelay:1];
 //        [self test];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self test];
-        });
-        
-    }];
-    self.agoraKit.delegate = nil;
-    self.agoraKit = nil;
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            [self test];
+//        });
+//
+//    }];
+//    self.agoraKit.delegate = nil;
+//    self.agoraKit = nil;
     
 }
 
@@ -166,14 +164,14 @@
 
 #pragma mark - ************************Function************************
 - (void)initEngine{
-//    if (!self.audioEngine) {
-//        self.audioEngine = [[AVAudioEngine alloc] init];
-//    }
+    if (!self.audioEngine) {
+        self.audioEngine = [[AVAudioEngine alloc] init];
+    }
     
-//    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-//
-//    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord mode:AVAudioSessionModeMeasurement options:AVAudioSessionCategoryOptionDuckOthers error:nil];
-//    [audioSession setActive:YES withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
+    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+
+    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord mode:AVAudioSessionModeMeasurement options:AVAudioSessionCategoryOptionDuckOthers error:nil];
+    [audioSession setActive:YES withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
     
     if (self.recognitionRequest) {
         [self.recognitionRequest endAudio];
@@ -191,9 +189,9 @@
 }
 
 - (void)releaseEngine {
-//    [[self.audioEngine inputNode] removeTapOnBus:0];
-//    [self.audioEngine stop];
-//    [self.audioEngine reset];
+    [[self.audioEngine inputNode] removeTapOnBus:0];
+    [self.audioEngine stop];
+    [self.audioEngine reset];
     
     [self.recognitionRequest endAudio];
     self.recognitionRequest = nil;
@@ -293,6 +291,9 @@
         }
     }
     self.bestTransStrs = letters;
+    if (self.transBLock) {
+        self.transBLock(self.bestTransStrs);
+    }
     
 //    for (SFTranscription *trans in recognitionResult.transcriptions) {
 //        for (SFTranscriptionSegment *segment in trans.segments) {
